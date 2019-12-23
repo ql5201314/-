@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.forest.common.dal.dao.AlarmRecordDAO">
+
+    <resultMap id="AlarmRecordDO" type="com.forest.common.dal.dataobject.AlarmRecordDO">
+        <result column="alm_rec_id" property="almRecId" javaType="Integer"/>
+        <result column="alm_time" property="almTime" javaType="Date"/>
+        <result column="opt_loc_x" property="optLocX" javaType="Double"/>
+        <result column="opt_loc_y" property="optLocY" javaType="Double"/>
+        <result column="is_handled" property="isHandled" javaType="Integer"/>
+        <result column="alm_status" property="almStatus" javaType="Integer"/>
+        <result column="mpt_id" property="mptId" javaType="Integer"/>
+        <result column="rot_angle" property="rotAngle" javaType="Double"/>
+        <result column="staff_id" property="staffId" javaType="Integer"/>
+        <result column="gmt_create" property="gmtCreate" javaType="Date"/>
+        <result column="gmt_modified" property="gmtModified" javaType="Date"/>
+    </resultMap>
+
+
+    <insert id="insertAlarmRecord" parameterType="com.forest.common.dal.dataobject.AlarmRecordDO"
+            useGeneratedKeys="true" keyProperty="alm_rec_id">
+        insert into alarm_record
+        (alm_time,opt_loc_x,opt_loc_y,is_handled,alm_status,mpt_id,rot_angle,staff_id,gmt_create,gmt_modified)
+        values
+        (#{almTime},#{optLocX},#{optLocY},#{isHandled},#{almStatus},#{mptId},#{rotAngle},#{staffId},now(),now())
+    </insert>
+
+    <update id="updateAlarmRecordByAlmRecId" parameterType="com.forest.common.dal.dataobject.AlarmRecordDO">
+        update alarm_record set gmt_modified = now(),
+        <trim suffixOverrides=",">
+            <if test="almStatus!=null">is_handled=#{isHandled},</if>
+            <if test="srcType!=null">alm_status=#{almStatus},</if>
+        </trim>
+        where id = #{almRecId}
+    </update>
+
+    <select id="queryAlarmRecordList" parameterType="com.forest.common.dal.query.AlarmRecordQuery">
+        select
+        alm_rec_id,alm_time,opt_loc_x,opt_loc_y,is_handled,alm_status,mpt_id,rot_angle,staff_id,gmt_create,gmt_modified
+        from alarm_record
+        where 1=1
+        <if test="almStatusList!=null">
+            and alm_status in
+            <foreach collection="almStatusList" item="almStatus" index="index" open="(" close=")" separator=",">
+                #{almStatus}
+            </foreach>
+        </if>
+        <if test="almTimeStart!=null">
+            and alm_time &gt;= #{almTimeStart}
+        </if>
+        <if test="almTimeEnd!=null">
+            and alm_time &lt;= #{almTimeEnd}
+        </if>
+        order by is_handled, gmt_modified desc
+    </select>
+
+    <select id="countAlarmRecord" parameterType="com.forest.common.dal.query.AlarmRecordQuery">
+        select
+        count(1)
+        from alarm_record
+        where 1=1
+        <if test="almStatusList!=null">
+            and alm_status in
+            <foreach collection="almStatusList" item="almStatus" index="index" open="(" close=")" separator=",">
+                #{almStatus}
+            </foreach>
+        </if>
+        <if test="almTimeStart!=null">
+            and alm_time &gt;= #{almTimeStart}
+        </if>
+        <if test="almTimeEnd!=null">
+            and alm_time &lt;= #{almTimeEnd}
+        </if>
+    </select>
+
+</mapper>

@@ -12,4 +12,14 @@
     <artifactId>forest-manager</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.forest.manage</groupId>
+            <artifactId>forest-common-dal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.forest.manage</groupId>
+            <artifactId>forest-common-util</artifactId>
+        </dependency>
+    </dependencies>
 </project>
